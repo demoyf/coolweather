@@ -4,11 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
 import com.example.baidumaptest.coolweather.model.City;
-import com.example.baidumaptest.coolweather.model.Country;
+import com.example.baidumaptest.coolweather.model.County;
 import com.example.baidumaptest.coolweather.model.Province;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,6 +96,7 @@ public class CoolWeatherDB {
                 c.setCityName(cursor.getString(cursor.getColumnIndex("city_name")));
                 c.setCityCode(cursor.getString(cursor.getColumnIndex("city_code")));
                 c.setProvinceId(provinceId);
+                list.add(c);
             }while (cursor.moveToNext());
         }
         if(cursor!=null){
@@ -106,24 +105,25 @@ public class CoolWeatherDB {
         return list;
     }
 //    add Country information into db
-    public void saveCountry(Country country){
+    public void saveCountry(County country){
         ContentValues values = new ContentValues();
-        values.put("country_name", country.getCountryName());
-        values.put("country_code",country.getCountryCode());
+        values.put("county_name", country.getCountryName());
+        values.put("county_code",country.getCountryCode());
         values.put("city_id",country.getCityId());
-        db.insert("Country",null,values);
+        db.insert("County",null,values);
     }
 //    load all country information from db by city id
-    public List<Country> loadCountry(int cityId){
-        List<Country> list = new ArrayList<>();
-        Cursor cursor = db.query("Country",null,"city_id = ?",new String[]{String.valueOf(cityId)},null,null,null);
+    public List<County> loadCountry(int cityId){
+        List<County> list = new ArrayList<>();
+        Cursor cursor = db.query("County",null,"city_id = ?",new String[]{String.valueOf(cityId)},null,null,null);
         if(cursor.moveToFirst()){
             do{
-                Country country = new Country();
+                County country = new County();
                 country.setId(cursor.getInt(cursor.getColumnIndex("id")));
-                country.setCountryName(cursor.getString(cursor.getColumnIndex("country_name")));
-                country.setCountryCode(cursor.getString(cursor.getColumnIndex("counrty_code")));
+                country.setCountryName(cursor.getString(cursor.getColumnIndex("county_name")));
+                country.setCountryCode(cursor.getString(cursor.getColumnIndex("county_code")));
                 country.setCityId(cityId);
+                list.add(country);
             }while(cursor.moveToNext());
         }
         return list;

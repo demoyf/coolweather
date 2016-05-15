@@ -3,7 +3,7 @@ package com.example.baidumaptest.coolweather.model;
 /**
  * Created by alone on 2016/5/13.
  */
-public class Country {
+public class County {
     private int id;
     private String countryName;
 
