@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.baidumaptest.coolweather.R;
+import com.example.baidumaptest.coolweather.service.AutoUpdateService;
 import com.example.baidumaptest.coolweather.util.HttpCallbackListener;
 import com.example.baidumaptest.coolweather.util.HttpUtil;
 import com.example.baidumaptest.coolweather.util.Utility;
@@ -120,6 +121,8 @@ public class WeatherActivity extends Activity implements View.OnClickListener{
         currentDateText.setText(prefs.getString("current_date",""));
         weatherInfoLayout.setVisibility(View.VISIBLE);
         cityNameText.setVisibility(View.VISIBLE);
+        Intent i = new Intent(this, AutoUpdateService.class);
+        startService(i);
     }
 
     @Override
