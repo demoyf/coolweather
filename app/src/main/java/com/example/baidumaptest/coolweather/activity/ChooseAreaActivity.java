@@ -2,7 +2,10 @@ package com.example.baidumaptest.coolweather.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -35,24 +38,37 @@ public class ChooseAreaActivity extends Activity{
     private ListView listView;
 //    new an adapter for listview
     private ArrayAdapter<String> adapter;
-    private CoolWeatherDB coolWeatherDB;
-    private List<String> dataList = new ArrayList<String>();
+        private CoolWeatherDB coolWeatherDB;
+        private List<String> dataList = new ArrayList<String>();
 //  province information list
-    private List<Province> provinceList;
+        private List<Province> provinceList;
 //    city list
-    private List<City> cityList;
+        private List<City> cityList;
 //    county list
-    private List<County> countyList;
+        private List<County> countyList;
 //    the province what we selected
-    private Province selectedProvince;
+        private Province selectedProvince;
 //    the city what we selected;
-    private City selectedCity;
+        private City selectedCity;
 //    current  level
-    private int currentLevel;
+        private int currentLevel;
+//    is't come from WeatherActivity
+        private boolean isFromWeatherActivity;
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity",false);
+//        获取SharedPreferences实例
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//        已经选择了城市而不是从WeatherActivity跳转过来，
+// 才会直接跳转到WeatherActivity,就是已经选择了就不再次选择，而是直接显示信息
+        if(prefs.getBoolean("city_selected",false)&&!isFromWeatherActivity){
+            Intent intent = new Intent(this,WeatherActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 //        this setence should be writed before setContentView
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.choose_area);
@@ -74,9 +90,15 @@ public class ChooseAreaActivity extends Activity{
                 }else if(currentLevel==LEVEL_CITY){
                     selectedCity = cityList.get(position);
                     queryConties();
-                }
-            }
-        });
+                }else if(currentLevel == LEVEL_COUNTY){
+                    String countyCode = countyList.get(position).getCountryCode();
+                    Intent intent = new Intent(ChooseAreaActivity.this,WeatherActivity.class);
+                    intent.putExtra("county_code",countyCode);
+                    startActivity(intent);
+                    finish();
+        }
+}
+});
 //        we shou load the province first.
         queryProvinces();
     }
@@ -214,6 +236,10 @@ public class ChooseAreaActivity extends Activity{
         }else if(currentLevel==LEVEL_CITY){
             queryProvinces();
         }else{
+            if(isFromWeatherActivity){
+                Intent intent = new Intent(this,WeatherActivity.class);
+                startActivity(intent);
+            }
             finish();
         }
     }
